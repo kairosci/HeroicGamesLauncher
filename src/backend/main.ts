@@ -833,6 +833,18 @@ addHandler('authZoom', async (event, url) => {
 addListener('logoutZoom', () => ZoomUser.logout())
 addHandler('getZoomUserInfo', async () => ZoomUser.getUserDetails())
 
+addHandler('syncStoreSession', async (_event, store) => {
+  const { syncStoreSession } = await import('./storeManagers/sessionSync')
+  return syncStoreSession(store)
+})
+
+addHandler('syncAllStoreSessions', async () => {
+  const { syncAllStoreSessions } = await import(
+    './storeManagers/sessionSync'
+  )
+  return syncAllStoreSessions()
+})
+
 addHandler('getAlternativeWine', async () =>
   GlobalConfig.get().getAlternativeWine()
 )

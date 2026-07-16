@@ -325,6 +325,12 @@ interface AsyncIPCFunctions {
     appName: string
   ) => Promise<number | undefined>
   getAmazonLoginData: () => Promise<NileLoginData>
+  syncStoreSession: (
+    store: 'epic' | 'gog' | 'amazon' | 'zoom'
+  ) => Promise<boolean>
+  syncAllStoreSessions: () => Promise<
+    Record<'epic' | 'gog' | 'amazon' | 'zoom', boolean>
+  >
   hasExecutable: (executable: string) => Promise<boolean>
 
   setPrivateBranchPassword: (appName: string, password: string) => void

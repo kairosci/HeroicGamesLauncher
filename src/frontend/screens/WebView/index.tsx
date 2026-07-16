@@ -148,6 +148,8 @@ export default function WebView() {
   }
 
   const [webviewPreloadPath, setWebviewPreloadPath] = useState('')
+  const [sessionSynced, setSessionSynced] = useState(false)
+
   useEffect(() => {
     const fetchWebviewPreloadPath = async () => {
       const path = await window.api.getWebviewPreloadPath()
@@ -156,6 +158,19 @@ export default function WebView() {
 
     void fetchWebviewPreloadPath()
   }, [])
+
+  useEffect(() => {
+    if (!store) {
+      setSessionSynced(true)
+      return
+    }
+
+    setSessionSynced(false)
+    window.api
+      .syncStoreSession(store as 'epic' | 'gog' | 'amazon' | 'zoom')
+      .catch(() => {})
+      .finally(() => setSessionSynced(true))
+  }, [store])
 
   useLayoutEffect(() => {
     const webview = webviewRef.current
@@ -362,7 +377,7 @@ export default function WebView() {
     }
   }, [webviewRef.current])
 
-  if (!webviewPreloadPath) {
+  if (!webviewPreloadPath || (store && !sessionSynced)) {
     return <></>
   }
 
@@ -380,7 +395,7 @@ export default function WebView() {
         key={store}
         ref={webviewRef}
         className="WebView__webview"
-        partition={`persist:${startUrl === epicLoginUrl ? 'epicstore' : store}`}
+        partition={`persist:${store ?? (runner === 'legendary' ? 'epic' : runner === 'nile' ? 'amazon' : runner)}`}
         src={startUrl}
         allowpopups={trueAsStr}
         preload={webviewPreloadPath}
